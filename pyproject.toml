@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling", "openai>=0.27.3"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ChatGPTDevFriendly"
+version = "0.0.1"
+authors = [
+  { name="Srinivas Kumar R", email="srinivas1996kumar@gmail.com" },
+]
+description = "A wrapper package which takes care of API call robustness to ensure developers 
+                can quickly and easily develop CHatGPT based applications."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/codeastra2/ChatGPTDevFriendly"
+

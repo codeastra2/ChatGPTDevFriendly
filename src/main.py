@@ -96,9 +96,16 @@ class ChatGptSmartClient(object):
     # This function is used for getting embeddings and hence maybe
     # used to speedup the system by caching.
     def get_embeddings(self, query: str):
+        """_summary_
+
+        Args:
+            query (str): _description_
+        """
         response = openai.Embedding.create(input=query, model="text-embedding-ada-002")
         embeddings = response["data"][0]["embedding"]
         print(len(embeddings))
 
     def rollback_conversation(self):
+        """_summary_
+        """
         pass
