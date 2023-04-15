@@ -46,6 +46,8 @@ We currently have the features of
     04-10-2023 10:34:34 | INFO | The total tokens used up-till now is: 665
     04-10-2023 10:34:34 | INFO | The average response time is: 10.28 sec
 ```
+![Sample response times graph](response_times.png)
+
 ```python
     chatgpt_client.print_metrics()
 ```

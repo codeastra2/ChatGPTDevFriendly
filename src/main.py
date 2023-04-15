@@ -4,6 +4,11 @@ from functools import wraps
 import requests
 import logging
 import sys
+import tiktoken
+
+import matplotlib.pyplot as plt
+from datetime import datetime
+
 
 
 log_formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', 
@@ -80,6 +85,7 @@ class ChatGptSmartClient(object):
         self.query_id = 0
 
         self.rsp_time_list = []
+        self.rsp_tstamp_list = []
         self.total_token_cnt_list = []
 
         self.log_info = log_info
@@ -115,8 +121,12 @@ class ChatGptSmartClient(object):
         f_resp = response["choices"][0]["message"]
         tot_token_cnt = response["usage"]["total_tokens"]
 
+        self.rsp_tstamp_list.append(end_time)
         self.rsp_time_list.append(end_time - start_time)
         self.total_token_cnt_list.append(tot_token_cnt)
+
+        if self.log_info:
+            self.logger.info(f"The total token count currently is {sum(self.total_token_cnt_list)}")
 
         if add_to_context:
             self.prev_msgs.append(f_resp)
@@ -154,3 +164,30 @@ class ChatGptSmartClient(object):
     def print_metrics(self):
         self.logger.info(f"The total tokens used up-till now is: {sum(self.total_token_cnt_list)}")
         self.logger.info(f"The average response time is: {sum(self.rsp_time_list)/len(self.rsp_time_list)} sec")
+
+        self.plot_rsp_times()
+
+    def plot_rsp_times(self):
+
+        formatted_timestamps = [datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S') for ts in self.rsp_tstamp_list]
+
+
+        # Plot the response times against the timestamps
+        fig, ax = plt.subplots()
+        ax.plot(formatted_timestamps, self.rsp_time_list)
+        ax.set_xlabel("Timestamp")
+        ax.set_ylabel("Response Time (s)")
+        ax.set_title("ChatGPT API Response Time")
+        ax.tick_params(axis='x', rotation=45)
+        ax.xaxis.labelpad = 35
+        ax.yaxis.labelpad = 35
+
+        # Increase the bottom and left margins of the plot
+        plt.subplots_adjust(bottom=0.2, left=0.15, fontsize=8)
+
+        # Save the figure as a PNG file
+        plt.savefig("response_times.png")
+
+        # Show the plot
+        plt.show()
+
