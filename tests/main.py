@@ -4,6 +4,7 @@ from functools import wraps
 import requests
 import logging
 import sys
+import json
 import tiktoken
 
 import matplotlib.pyplot as plt
@@ -187,9 +188,49 @@ class ChatGptSmartClient(object):
 
         plt.xticks(rotation=45, fontsize=6)
 
+
         # Save the figure as a PNG file
         plt.savefig("response_times.png")
 
         # Show the plot
         plt.show()
 
+    def dump_context_to_a_file(self, filename="context"):
+        self.dicts_to_jsonl(data_list=self.prev_msgs, filename=filename)
+
+        
+    def dicts_to_jsonl(self, data_list: list, filename: str, compress: bool = True) -> None:
+        """
+        Method saves list of dicts into jsonl file.
+        :param data_list: (list) list of dicts to be stored,
+        :param filename: (str) path to the output file. If suffix .jsonl is not given then methods appends
+            .jsonl suffix into the file.
+        :param compress: (bool) should file be compressed into a gzip archive?
+        """
+        sjsonl = '.jsonl'
+
+        # Check filename
+        if not filename.endswith(sjsonl):
+            filename = filename + sjsonl
+
+        # Save data
+        with open(filename, 'w') as out:
+            for ddict in data_list:
+                jout = json.dumps(ddict) + '\n'
+                out.write(jout)
+    
+    def load_context_from_a_file(self, filename):
+
+        sjsonl = '.jsonl'
+
+        # Check filename
+        if not filename.endswith(sjsonl):
+            filename = filename + sjsonl
+        
+        self.prev_msgs = []
+        
+        with open(filename, encoding='utf-8') as json_file:
+            for line in json_file.readlines():
+                self.prev_msgs.append(line)
+
+        return self.prev_msgs

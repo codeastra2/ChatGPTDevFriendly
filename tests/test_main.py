@@ -10,4 +10,7 @@ for _ in range(2):
     chatgptsmtclient.query("List the top 10 upcoming startups in India?")
     chatgptsmtclient.query("Ok thanks, can you giv me the valuation of these startups in tabuar format")
 
+chatgptsmtclient.dump_context_to_a_file("context")
+chatgptsmtclient.load_context_from_a_file("context")
+
 chatgptsmtclient.print_metrics()
