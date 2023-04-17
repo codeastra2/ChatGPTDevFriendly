@@ -27,7 +27,15 @@ response  = chatgpt_client.query(prompt, w_context=True, add_to_context=False)
 ```
 
 ## Features
-We currently have the features of
+
+
+- [x] Save Conversations to a file
+- [x] Resume conversations by loading context from a file. 
+- [x] Retry logic in case of API failures.
+- [x] Regular Trimming of context to 4000 tokens so that limit of 4097 is not breached. 
+- [x] Total token and token vs time metric. 
+
+
 - Retries: This is incase of failures like connection based request exceptions, API errors.
 ```
     (openai) C:\Users\Srinivas\OneDrive\Desktop\StartupSearchGPT\tests>python test_main.py
@@ -39,6 +47,9 @@ We currently have the features of
     Retrying after 12 seconds...
     Error occurred: API error , please try later
 ``` 
+- Context trimming: Context is trimmed as needed when the limit breaches 4000 tokens. 
+![Trimming and printing metrics](printed_metrics.png)
+
 - Tracking metrics such as average time per response and total token usage.
 ```
     04-10-2023 10:26:44 | INFO | The time taken for this response is : 7.85 seconds

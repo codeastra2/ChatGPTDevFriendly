@@ -73,6 +73,8 @@ class ChatGptSmartClient(object):
     read more on that here: https://platform.openai.com/docs/guides/chat .
     """
 
+    CONTEXT_TOKEN_LIMIT = 4000
+
     def __init__(self, api_key: str, model: str, log_info: bool=False):
         openai.api_key = api_key
 
@@ -89,6 +91,10 @@ class ChatGptSmartClient(object):
         self.rsp_tstamp_list = []
         self.total_token_cnt_list = []
 
+        self.rspid_vs_tottokens_dict = {}
+
+        self.total_token_cnt = 0 
+
         self.log_info = log_info
         self.logger = logging.getLogger("chatgptlogger")
         self.logger.setLevel(logging.INFO)
@@ -104,6 +110,9 @@ class ChatGptSmartClient(object):
 
         query = {"role": "user", "content": query}
         rsp_id = None
+
+        if sum(self.total_token_cnt_list) >= self.CONTEXT_TOKEN_LIMIT:
+            self.trim_conversation()
 
         if w_context:
             msgs = self.prev_msgs[:]
@@ -126,13 +135,20 @@ class ChatGptSmartClient(object):
         self.rsp_time_list.append(end_time - start_time)
         self.total_token_cnt_list.append(tot_token_cnt)
 
+        self.total_token_cnt += tot_token_cnt
+
+
         if self.log_info:
-            self.logger.info(f"The total token count currently is {sum(self.total_token_cnt_list)}")
+            self.logger.info(f"The total token count currently is {self.total_token_cnt}")
 
         if add_to_context:
+            self.prev_msgs.append(query)
             self.prev_msgs.append(f_resp)
             self.rsp_id += 1
             rsp_id = self.rsp_id
+            self.rspid_vs_tottokens_dict[self.rsp_id] = tot_token_cnt
+
+        #print(self.prev_msgs)
 
         return f_resp, rsp_id
 
@@ -163,7 +179,7 @@ class ChatGptSmartClient(object):
         self.rsp_id = len(self.prev_msgs)
     
     def print_metrics(self):
-        self.logger.info(f"The total tokens used up-till now is: {sum(self.total_token_cnt_list)}")
+        self.logger.info(f"The total tokens used up-till now is: {self.total_token_cnt}")
         self.logger.info(f"The average response time is: {sum(self.rsp_time_list)/len(self.rsp_time_list)} sec")
 
         self.plot_rsp_times()
@@ -187,7 +203,6 @@ class ChatGptSmartClient(object):
         plt.subplots_adjust(bottom=0.2, left=0.15)
 
         plt.xticks(rotation=45, fontsize=6)
-
 
         # Save the figure as a PNG file
         plt.savefig("response_times.png")
@@ -234,3 +249,12 @@ class ChatGptSmartClient(object):
                 self.prev_msgs.append(line)
 
         return self.prev_msgs
+
+    def trim_conversation(self):
+        while sum(self.total_token_cnt_list) >= self.CONTEXT_TOKEN_LIMIT:
+
+            del  self.total_token_cnt_list[0]
+            del self.prev_msgs[1]
+            del self.prev_msgs[2]
+        
+        print(f"Trimmed the context list to length: {sum(self.total_token_cnt_list)}")
