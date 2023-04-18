@@ -1,7 +1,7 @@
 api_key = "api_key"
 model_name = "gpt-3.5-turbo"
 
-from main import ChatGptSmartClient
+from chatgptdevfriendly.v1 import ChatGptSmartClient
 
 
 chatgptsmtclient = ChatGptSmartClient(api_key=api_key, model=model_name, log_info=True)

@@ -5,7 +5,6 @@ import requests
 import logging
 import sys
 import json
-import tiktoken
 
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -31,15 +30,17 @@ def retry(tries=5, delay=3, backoff=2):
             mtries, mdelay = tries, delay
             while mtries >= 0:
                 try:
+                    #args[0].logger.info("Trying the the function.......")
                     return func(*args, **kwargs)
                 except (
                     openai.error.APIError,
+                    openai.error.APIConnectionError,
                     requests.exceptions.RequestException,
                 ) as e:
-                    print(f"Error occurred: {str(e)}")
+                    args[0].logger.info(f"Error occurred: {str(e)}")
                     mtries -= 1
                     if mtries >= 0:
-                        print(f"Retrying after {mdelay} seconds...")
+                        args[0].logger.info(f"Retrying after {mdelay} seconds...")
                         time.sleep(mdelay)
 
                     mdelay *= backoff
@@ -96,7 +97,7 @@ class ChatGptSmartClient(object):
         self.total_token_cnt = 0 
 
         self.log_info = log_info
-        self.logger = logging.getLogger("chatgptlogger")
+        self.logger = logging.getLogger(f"chatgptlogger{time.time()}")
         self.logger.setLevel(logging.INFO)
         stdout_handler = logging.StreamHandler(sys.stdout)
         stdout_handler.setFormatter(log_formatter)
@@ -257,4 +258,4 @@ class ChatGptSmartClient(object):
             del self.prev_msgs[1]
             del self.prev_msgs[2]
         
-        print(f"Trimmed the context list to length: {sum(self.total_token_cnt_list)}")
+        self.logger.info(f"Trimmed the context list to length: {sum(self.total_token_cnt_list)}")

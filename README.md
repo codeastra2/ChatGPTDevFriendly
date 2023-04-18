@@ -5,7 +5,7 @@ This package can be used by developers to quickly develop ChatGPT applications w
 and boilerplate code being taken care of by this wrapper.
 
 ## Requirements 
-`pip install openai`
+`pip install chatgptdevfriendly`
 
 ## Usage 
 
@@ -13,6 +13,9 @@ All the source code is currently in `src` directory and also in `tests` with sam
 ) to use this. 
 
 ```python
+
+from chatgptdevfriendly.v1 import ChatGptSmartClient
+
 chatgpt_client = ChatGptSmartClient(openai_api_key, model_name)
 # We can query with some previous context and also decide whether to add a prompts answer to the context
 prompt="List the top 10 upcoming startups in India?"
