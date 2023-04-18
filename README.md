@@ -60,7 +60,7 @@ response  = chatgpt_client.query(prompt, w_context=True, add_to_context=False)
     04-10-2023 10:34:34 | INFO | The total tokens used up-till now is: 665
     04-10-2023 10:34:34 | INFO | The average response time is: 10.28 sec
 ```
-![Sample response times graph](response_times.png)
+![Sample response times graph](response_time_grp.png)
 
 ```python
     chatgpt_client.print_metrics()
